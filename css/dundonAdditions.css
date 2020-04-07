@@ -1,0 +1,88 @@
+@import url("https://cloud.typography.com/655080/6542352/css/fonts.css");
+
+* {
+  box-sizing: border-box;
+	font-family: "avenirregular", Ariel, sans-serif;
+}
+
+#title-header {
+  background-image: url("../img/Antibes_1.JPG");
+
+  background-color: #cccccc; /* Used if the image is unavailable */
+  height: 350px; /* You must set a specified height */
+  background-position: 100% 40%; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+	margin: 0;
+	padding: 0;
+	border: 1px solid blue;
+}
+
+#main-title {
+	box-sizing: border-box;
+	font-size: 400%;
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: 0;
+	border: 0;
+	line-height: 95%;
+}
+
+.main {
+	font-family: "avenirbold", Ariel Bold, sans-serif;
+	color: white;
+}
+
+.main-subtitle {
+	box-sizing: border-box;
+	font-size: 150%;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 5px;
+	padding-top: 0;
+	padding-bottom: 0;
+	border: 0;
+	line-height: 99%;
+}
+
+.pct80-section {
+	position: relative;
+	height: 300px;
+	width: 80%;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	/* border: 1px solid red; */
+}
+
+.pct20-section {
+	position: absolute;
+	width: 20%;
+	left: 0;
+}
+
+.pct95-section {
+	position: absolute;
+	width: 95%;
+	right: 0;
+	top: 0;
+	margin: 0;
+	padding: 0;
+	/* border: 1px solid green; */
+}
+
+.relative {
+	position: relative;
+}
+
+.absolute {
+	position: absolute;
+}
+
+.stealth {
+	opacity: 0;
+}
+
+.navbar{
+	background: transparent;
+}
