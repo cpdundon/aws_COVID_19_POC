@@ -14,7 +14,7 @@ const getData = () => {
 		.then((text) => {
 			let json = JSON.parse(text)
 			console.log('request succeeded with JSON response')
-			console.log(json)
+			// console.log(json)
 			console.log('Array length: ', json.length)
 			fillTable(json)
 		}).catch(function (error) {
@@ -26,14 +26,18 @@ const getData = () => {
 const fillTable = (json) => {
 	let html = ''
 	let cases_m1 = 0
+	let dt = new Date(Date.UTC(1970, 0, 1))
+	let dtStr = dt.toISOString().substring(0,10)
 
 	console.log("filling table")
 
 	for(i=0; i<json.length; i++) {
 		let cases = json[i].Cases
+		dt = new Date(json[i].Date)
+		dtStr = dt.toISOString().substring(0,10)
 
 		html += "<tr>"
-		html += "<td>" + json[i].Date + "</td>"
+		html += "<td>" + dtStr + "</td>"
 		html += "<td>" + cases + "</td>"
 		html += "<td>" + (cases - cases_m1) + "</td>"
 		html += "</tr>"
@@ -41,6 +45,6 @@ const fillTable = (json) => {
 		cases_m1 = cases
 	}
 	
-	console.log('html... ', html)
+	//console.log('html... ', html)
 	$(html).insertAfter("tr#head-tr")
 } 
