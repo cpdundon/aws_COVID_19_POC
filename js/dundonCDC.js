@@ -28,6 +28,7 @@ const fillTable = (json) => {
 	let cases_m1 = 0
 	let dt = new Date(Date.UTC(1970, 0, 1))
 	let dtStr = dt.toISOString().substring(0,10)
+	const nfObject = new Intl.NumberFormat('en-US'); 
 
 	console.log("filling table")
 
@@ -38,8 +39,8 @@ const fillTable = (json) => {
 
 		html += "<tr>"
 		html += "<td>" + dtStr + "</td>"
-		html += "<td>" + cases + "</td>"
-		html += "<td>" + (cases - cases_m1) + "</td>"
+		html += "<td>" + nfObject.format(cases) + "</td>"
+		html += "<td>" + nfObject.format(cases - cases_m1) + "</td>"
 		html += "</tr>"
 
 		cases_m1 = cases
