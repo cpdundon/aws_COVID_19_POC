@@ -16,7 +16,7 @@
 
 	margin: 0;
 	padding: 25px;
-	border: 1px solid blue;
+	border: 1px solid orange;
 }
 
 #main-title {
@@ -74,9 +74,9 @@ h3.main {
 }
 
 .absolute-margin-100px {
-	margin: 100px;
-	padding: 50px;
-	position: absolute;
+	margin: 0;
+	padding: 10px;
+	position: relative;
 	border: 1px solid orange;
 }
 
@@ -98,7 +98,7 @@ h3.main {
 
 table {
 	table-layout: fixed;
-	width: 35%;
+	width: 75%;
 	border-collapse: separate;
 }
 
@@ -108,5 +108,17 @@ th {
 }
 
 table, th, td {
-  border: 1px solid black;
+  border: 1px solid orange;
+}
+
+.right-position {
+	width: 55%;
+	position: absolute;
+	right: 0;
+}
+
+.left-position {
+	width: 45%;
+	position: absolute;
+	left: 0;
 }

@@ -25,15 +25,22 @@ const getData = () => {
 
 const fillTable = (json) => {
 	let html = ''
-	let cases_m1 = 0
 	let dt = new Date(Date.UTC(1970, 0, 1))
 	let dtStr = dt.toISOString().substring(0,10)
-	const nfObject = new Intl.NumberFormat('en-US'); 
+	const nfObject = new Intl.NumberFormat('en-US') 
 
 	console.log("filling table")
 
-	for(i=0; i<json.length; i++) {
+	for(i=json.length-1; i>=0; i--) {
 		let cases = json[i].Cases
+		let cases_m1
+
+		if (i!==0) {
+			cases_m1 = json[i-1].Cases
+		} else{
+			cases_m1 = 0
+		}
+
 		dt = new Date(json[i].Date)
 		dtStr = dt.toISOString().substring(0,10)
 
@@ -42,10 +49,7 @@ const fillTable = (json) => {
 		html += "<td>" + nfObject.format(cases) + "</td>"
 		html += "<td>" + nfObject.format(cases - cases_m1) + "</td>"
 		html += "</tr>"
-
-		cases_m1 = cases
 	}
-	
-	//console.log('html... ', html)
+
 	$(html).insertAfter("tr#head-tr")
 } 

@@ -18,31 +18,36 @@
 	<script src="js/dundonCDC.js" crossorigin="anonymous"></script>
 
 </head>
-<body>
+<body class="relative">
 	<div id="title-header">	
-		<h1 id="main-title" class="main">Elementary COVID-19 Analysis</h1>
+		<h1 id="main-title" class="main">Elementary COVID-19 Analysis*</h1>
 		<h3 class="main">Analyst: Your Name Here</h3>
 		<h3 class="main">Analyst: Christopher P. Dundon</h3>
 	</div>
-	<h2><button type="button" id="get-data">Get US COVID-19 Data!</button></h2>
-	<h2>Plot of New US COVID-19 Cases by Day</h2>
+	<div class="absolute-margin-100px">
+			<h4>*Note: This is off the cuff analysis.  This study was constructed by computer professionals not epidemiologists.  We are staying safe during difficult times.</h4>
+	</div>
 	<div>
-		<div>
-			<p>PLOTS GO HERE!</p>
-    </div>
-		<div id="table">
-			<table>
-				<tbody>
-					<tr id="head-tr">
-						<th>Date</th>
-						<th>Cumulative Cases</th>
-						<th>Cases by Day</th>
-					</tr>
-				</tbody>
-			</table>
+		<div class="left-position">
+			<h2><button type="button" id="get-data">Get US COVID-19 Data!</button></h2>
+			<h2>Plot of New US COVID-19 Cases by Day</h2>
+			<div>
+				<p>PLOTS GO HERE!</p>
+			</div>
+			<div id="table">
+				<table>
+					<tbody>
+						<tr id="head-tr">
+							<th>Date</th>
+							<th>Cumulative Cases</th>
+							<th>Cases by Day</th>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
-		<div class="absolute-margin-100px">
-			<h4>Note: This is off the cuff analysis.  Chris Dundon is neither a statistician nor an epidemiologist.  He is a fella trying to stay safe during trying times.</h4>
+		<div class="right-position">
+			<p>Add your favorite picture from better days.  My favorite is above - Antibes France circa 2010.</p>
 		</div>
 	</div>
 </body>
