@@ -98,13 +98,17 @@ h3.main {
 
 table {
 	table-layout: fixed;
-	width: 75%;
+	width: 55%;
 	border-collapse: separate;
 }
 
 th {
 	font-weight: bold;
 	text-align: center;
+}
+
+tr {
+	text-align: right;
 }
 
 table, th, td {
