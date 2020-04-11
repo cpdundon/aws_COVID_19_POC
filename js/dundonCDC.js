@@ -7,28 +7,30 @@ function main () {
 } 
 
 const getData = () => {
-	//const url = 'https://api.covid19api.com/total/country/us/status/confirmed'
-	const url = 'https://api.covid19api.com/total/country/us/status/deaths'
-	const info = {}
-
-	fetchData (url, info, true)
+	fetchData ()
 }
 
-const fetchData = (url, info, deaths) => {
-	
-	console.log('fetching: ', url)
-	fetch(url)
-		.then(data => data.text())
-		.then((text) => {
-			let json = JSON.parse(text)
-			console.log('request succeeded with JSON response')
-			console.log('Array length: ', json.length)
-			fillTable(json)
-			parseInfo(json, info, deaths)
-		}).catch(function (error) {
-			console.log('request failed', error)
-		});
+const fetchData = () => {
+	const url_c = 'https://api.covid19api.com/total/country/us/status/confirmed'
+	const url_d = 'https://api.covid19api.com/total/country/us/status/deaths'
+	const url_r = 'https://api.covid19api.com/total/country/us/status/recovered'
+	const urlArr = [url_c, url_d, url_r]
+	const info = new JsonHolder()
 
+	console.log('fetching...')
+	
+	Promise.all(urlArr.map(url =>
+  fetch(url)        
+    .then(data => data.json())
+    .catch(error => console.log('request failed ', error))
+	))
+	.then(data => {
+		console.log('full set of data: ', data)
+		info.confirmed = data[0]
+		info.deaths = data[1]
+		info.recovered = data[2]
+		console.log(info)
+	})
 }
 
 const fillTable = (json) => {
@@ -118,14 +120,30 @@ class CovidInfo {
 		this.deaths = -1
 	}
 
-	get date { return this.date }
-	get newCases { return this.newCases}
-	get cases { return this.cases}
-	get newDeaths { return this.newDeaths }
-	get deaths { return this.deaths }
+	get date () { return this.date }
+	get newCases () { return this.newCases}
+	get cases () { return this.cases}
+	get newDeaths () { return this.newDeaths }
+	get deaths () { return this.deaths }
 
-	setNewCases (newCases) { this.newCases = newCases  }
-	setCases (cases) {this.cases = cases }
-	setNewDeaths (newDeaths) { this.newDeaths = newDeaths  }
-	setDeaths (deaths) { this.deaths = deaths  }
+	set newCases (newCases) { this.newCases = newCases  }
+	set cases (cases) {this.cases = cases }
+	set newDeaths (newDeaths) { this.newDeaths = newDeaths  }
+	set deaths (deaths) { this.deaths = deaths  }
+}
+
+class JsonHolder {
+	constructor () {
+		this.confirmed_ = []
+		this.recovered_ = []
+		this.deaths_ = []
+	}
+
+	get confirmed () { return this.confirmed_ }
+	get recovered () { return this.recovered_ }
+	get deaths () { return this.deaths_  }
+
+	set confirmed (confirmed) { this.confirmed_ = confirmed }
+	set recovered (recovered) { this.recovered_ = recovered }
+	set deaths (deaths) { this.deaths_ = deaths }
 }
