@@ -98,7 +98,7 @@ h3.main {
 
 table {
 	table-layout: fixed;
-	width: 55%;
+	width: 95%;
 	border-collapse: separate;
 }
 
@@ -116,13 +116,13 @@ table, th, td {
 }
 
 .right-position {
-	width: 55%;
+	width: 45%;
 	position: absolute;
 	right: 0;
 }
 
 .left-position {
-	width: 45%;
+	width: 55%;
 	position: absolute;
 	left: 0;
 }

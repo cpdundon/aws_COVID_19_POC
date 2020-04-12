@@ -25,111 +25,124 @@ const fetchData = () => {
     .catch(error => console.log('request failed ', error))
 	))
 	.then(data => {
-		console.log('full set of data: ', data)
 		info.confirmed = data[0]
 		info.deaths = data[1]
 		info.recovered = data[2]
 		console.log(info)
+
+		return info
+	})
+	.then(info => {
+		const dayDict = parseInfo(info)
+		console.log('dayDict: ', dayDict)
+		fillTable(dayDict)
 	})
 }
 
-const fillTable = (json) => {
-	let html = ''
-	let dt = new Date(Date.UTC(1970, 0, 1))
-	let dtStr = dt.toISOString().substring(0,10)
+const fillTable = (dayDict) => {
 	const nfObject = new Intl.NumberFormat('en-US') 
+	const dates = Object.keys(dayDict)
+	dates.sort()
 
-	console.log("filling table")
-
-	for(i=json.length-1; i>=0; i--) {
-		let cases = json[i].Cases
-		let cases_m1
-
-		if (i!==0) {
-			cases_m1 = json[i-1].Cases
-		} else{
-			cases_m1 = 0
-		}
-
-		dt = new Date(json[i].Date)
-		dtStr = dt.toISOString().substring(0,10)
-
+	let html = ''
+	for(i=0; i<dates.length-1; i++) {
+		const ci = dayDict[dates[i]]
+		
 		html += "<tr>"
-		html += "<td>" + dtStr + "</td>"
-		html += "<td>" + nfObject.format(cases - cases_m1) + "</td>"
-		html += "<td>" + nfObject.format(cases) + "</td>"
+		html += "<td>" + dates[i] + "</td>"
+		html += "<td>" + nfObject.format(ci.newCases) + "</td>"
+		html += "<td>" + nfObject.format(ci.cases) + "</td>"
+		html += "<td>" + nfObject.format(ci.newRecovered) + "</td>"
+		html += "<td>" + nfObject.format(ci.recovered) + "</td>"
+		html += "<td>" + nfObject.format(ci.newDeaths) + "</td>"
+		html += "<td>" + nfObject.format(ci.deaths) + "</td>"
 		html += "</tr>"
 	}
-
+	
 	$(html).insertAfter("tr#head-tr")
 }
 
- 
-const parseInfo = (allJson, deathJson) => {
+const parseInfo = (info) => {
 	let dt = new Date(Date.UTC(1970, 0, 1))
 	let dtStr = dt.toISOString().substring(0,10)
-	allBegin = new Date(allJson[0].Date)
-	deathBegin = new Date(deathJson[0].Date)
-	firstDt = Math.min(allBegin, deathBegin)
-
-	allEnd = new Date(allJson[allJson.length-1].Date)
-	deathEnd = new Date(deathEnd[deathJson.length-1].Date)
-	lastDt = Math.max(allEnd, deathEnd)
+	const firstDt = info.firstDate()
+	const lastDt = info.lastDate()
 
 	const dayCount = (lastDt - firstDt) / (24 * 3600 * 1000)
 
 	const dayDict = {}
 	for (i=0; i<dayCount; i++) {
-		const dt = firstDt + (24 * 3600 * 1000) * i
+		const dt = new Date(firstDt + (24 * 3600 * 1000) * i)
 		dayDict[dt.toISOString().substring(0,10)] = new CovidInfo( dt ) 
 	}
 
-	let cases_m1 = 0
-	for (i=0; i<allJson.length - 1; i++) {
-		const dtStr = allJson[i].Date.substring(0,10)
-		const ci = dayDict[dtStr]
-		const cases = allJson[i].Cases
-		const diff = cases - cases_m1
-		ci.setCases(cases)
-		ci.setNewCases(diff)
-
-		cases_m1 = cases
-	}
-
-	cases_m1 = 0
-	for (i=0; i<deathJson.length - 1; i++) {
-		const dtStr = deathJson[i].Date.substring(0,10)
-		const ci = dayDict[dtStr]
-		const cases = deathJson[i].Cases
-		const diff = cases - cases_m1
-		ci.setCases(cases)
-		ci.setNewCases(diff)
-
-		cases_m1 = cases
-	}
+	let data = info.confirmed
+	parseOneSet (dayDict, data, 'confirmed')
+	data = info.deaths
+	parseOneSet (dayDict, data, 'deaths')
+	data = info.recovered
+	parseOneSet (dayDict, data, 'recovered')
 
 	return dayDict
 }
 
+const parseOneSet = (dayDict, data, setName) => {
+	let cases_m1 = 0
+	for (i=0; i<data.length - 1; i++) {
+		const dtStr = data[i].Date.substring(0,10)
+		const ci = dayDict[dtStr]
+		const cases = parseInt(data[i].Cases)
+		const diff = cases - cases_m1
+		
+		switch (setName) {
+			case 'confirmed':
+				ci.cases = cases
+				ci.newCases = diff
+				break
+			case 'deaths':
+				ci.deaths = cases
+				ci.newDeaths = diff
+				break
+			case 'recovered':
+				ci.recovered = cases
+				ci.newRecovered = diff
+				break
+			default:
+				ci.cases = -1
+				ci.deaths = -1
+				ci.recovered = -1
+		}	
+		cases_m1 = cases
+	}
+}
+
 class CovidInfo {
 	constructor(dt) {
-		this.date = dt
-		this.newCases = -1
-		this.cases = -1
-		this.newDeaths = -1
-		this.deaths = -1
+		this.date_ = dt
+		this.newCases_ = -1
+		this.cases_ = -1
+		this.newDeaths_ = -1
+		this.deaths_ = -1
+		this.recovered_ = -1
+		this.newRecovered_ = -1
 	}
+	
+	get dayString () { return this.date_.toISOString().substring(0,10) }
+	get date () { return this.date_ }
+	get newCases () { return this.newCases_}
+	get cases () { return this.cases_}
+	get newDeaths () { return this.newDeaths_ }
+	get deaths () { return this.deaths_ }
+	get newRecovered () { return this.newRecovered_ }
+	get recovered () { return this.recovered_ }
 
-	get date () { return this.date }
-	get newCases () { return this.newCases}
-	get cases () { return this.cases}
-	get newDeaths () { return this.newDeaths }
-	get deaths () { return this.deaths }
 
-	set newCases (newCases) { this.newCases = newCases  }
-	set cases (cases) {this.cases = cases }
-	set newDeaths (newDeaths) { this.newDeaths = newDeaths  }
-	set deaths (deaths) { this.deaths = deaths  }
+	set newCases (newCases) { this.newCases_ = newCases }
+	set cases (cases) { this.cases_ = cases }
+	set newDeaths (newDeaths) { this.newDeaths_ = newDeaths }
+	set deaths (deaths) { this.deaths_ = deaths }
+	set newRecovered (newRecovered) { this.newRecovered_ = newRecovered }
+	set recovered (recovered) { this.recovered_ = recovered }
 }
 
 class JsonHolder {
@@ -146,4 +159,13 @@ class JsonHolder {
 	set confirmed (confirmed) { this.confirmed_ = confirmed }
 	set recovered (recovered) { this.recovered_ = recovered }
 	set deaths (deaths) { this.deaths_ = deaths }
+
+	firstDate() { return Math.min(new Date(this.confirmed[0].Date), 
+																new Date(this.deaths[0].Date), 
+																new Date(this.recovered[0].Date)) 
+							}
+	lastDate() { return Math.max(new Date(this.confirmed[this.confirmed.length-1].Date), 
+																new Date(this.deaths[this.deaths.length-1].Date), 
+																new Date(this.recovered[this.recovered.length-1].Date)) 
+							}
 }
