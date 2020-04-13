@@ -11,6 +11,32 @@ const getData = () => {
 }
 
 const fetchData = () => {
+	const hdr = {'Subscription-Key': '3009d4ccc29e4808af1ccc25c69b4d5d'}
+	const url = 'https://api.smartable.ai/coronavirus/stats/US'
+	
+	console.log('fetching...')
+	
+	const hdrInst = new Headers(hdr)
+
+	const req = new Request(url, {
+		method: 'GET',
+		headers: hdrInst,
+		mode: 'cors',
+		cache: 'default',
+	})
+
+	fetch(req)
+	.then(data => data.json())
+	.then(data => {
+		const dayDict = parseInfo(data.stats.history)
+		console.log('dayDict: ', dayDict)
+		fillTable(dayDict)
+	})
+   .catch(error => console.log('request failed ', error))
+	
+}
+
+const fetchData_ParseAll = () => {
 	const url_c = 'https://api.covid19api.com/total/country/us/status/confirmed'
 	const url_d = 'https://api.covid19api.com/total/country/us/status/deaths'
 	const url_r = 'https://api.covid19api.com/total/country/us/status/recovered'
@@ -62,27 +88,32 @@ const fillTable = (dayDict) => {
 	$(html).insertAfter("tr#head-tr")
 }
 
-const parseInfo = (info) => {
-	let dt = new Date(Date.UTC(1970, 0, 1))
-	let dtStr = dt.toISOString().substring(0,10)
-	const firstDt = info.firstDate()
-	const lastDt = info.lastDate()
+const parseInfo = (hist) => {
+	const firstDt = new Date(hist[0].date + ".000Z") 
 
-	const dayCount = (lastDt - firstDt) / (24 * 3600 * 1000)
+	let ci_m1 = new CovidInfo(new Date(firstDt - 1000 * 360 * 24))
+	ci_m1.confirmed = 0
+	ci_m1.deaths = 0
+	ci_m1.recovered = 0
 
 	const dayDict = {}
-	for (i=0; i<dayCount; i++) {
-		const dt = new Date(firstDt + (24 * 3600 * 1000) * i)
-		dayDict[dt.toISOString().substring(0,10)] = new CovidInfo( dt ) 
+	for (i=0; i<hist.length-1; i++) {
+		const h = hist[i] 
+		const dt = new Date(h.date + ".000Z")
+		const ci = new CovidInfo( dt )
+		dayDict[dt.toISOString().substring(0,10)] = ci
+
+		ci.cases = h.confirmed
+		ci.deaths = h.deaths
+		ci.recovered = h.recovered
+
+		ci.newCases = h.confirmed - ci_m1.cases
+		ci.newDeaths = h.deaths - ci_m1.deaths
+		ci.newRecovered = h.recovered - ci_m1.recovered
+		
+		ci_m1 = ci
+		
 	}
-
-	let data = info.confirmed
-	parseOneSet (dayDict, data, 'confirmed')
-	data = info.deaths
-	parseOneSet (dayDict, data, 'deaths')
-	data = info.recovered
-	parseOneSet (dayDict, data, 'recovered')
-
 	return dayDict
 }
 
