@@ -32,6 +32,7 @@ const fetchData = () => {
 		const dayDict = parseInfo(data.stats.history)
 		console.log('dayDict: ', dayDict)
 		fillTable(dayDict)
+		plotDiffs(dayDict)
 	})
    .catch(error => console.log('request failed ', error))
 	
@@ -200,4 +201,103 @@ class JsonHolder {
 																new Date(this.deaths[this.deaths.length-1].Date), 
 																new Date(this.recovered[this.recovered.length-1].Date)) 
 							}
+}
+
+// ==========================================
+// CODE TO EXECUTE PLOTS GOES BELOW
+// ==========================================
+
+const plotDiffs = dayDict  => {
+	
+	const trace1 = newTrace(dayDict, 'New Confirmed', 'gray')
+	const trace2 = newTrace(dayDict, 'New Deaths', 'black')
+	const trace3 = newTrace(dayDict, 'New Recoveries', 'orange')
+	const data = [trace1, trace2, trace3]; 
+			
+	var layout = {
+		title: 'COVID-19 Day on Day Changes',
+		xaxis: {
+			title: 'Date',
+			titlefont: {
+				family: 'Arial, sans-serif',
+				size: 18,
+				color: 'lightgrey'
+			},
+			showticklabels: true,
+			tickangle: 'auto',
+			tickfont: {
+				family: 'Old Standard TT, serif',
+				size: 14,
+				color: 'black'
+			},
+			exponentformat: 'e',
+			showexponent: 'all'
+		},
+		yaxis: {
+			title: 'Cases',
+			titlefont: {
+				family: 'Arial, sans-serif',
+				size: 18,
+				color: 'lightgrey'
+			},
+			showticklabels: true,
+			tickangle: 45,
+			tickfont: {
+				family: 'Old Standard TT, serif',
+				size: 14,
+				color: 'black'
+			},
+			exponentformat: 'e',
+			showexponent: 'all'
+		}
+	};
+
+	Plotly.newPlot('day-on-day', data, layout);
+}
+
+const newTrace = (name, dayDict, color) => {
+	const data = {}
+
+	parseDict(dayDict, data, name)
+	
+	const trace = {
+    type: "scatter",
+    mode: "lines",
+    name: name,
+    x: data['x'],
+    y: data['y'],
+    line: {color: color}
+  }
+	
+	return trace
+}
+
+const parseDict = (dayDict, data, stream) => {
+	const nfObject = new Intl.NumberFormat('en-US') 
+	const dates = Object.keys(dayDict)
+	dates.sort()
+
+	yValues = []
+	for(i=dates.length-1; i>=0; i--) {
+		const ci = dayDict[dates[i]]
+	
+		switch (stream) {
+			case 'New Confirmed':
+				//ci.cases = cases
+				yValues.push(ci.newCases)
+				break
+			case 'New Deaths':
+				//ci.deaths = cases
+				yValues.push(ci.newDeaths)
+				break
+			case 'New Recovered':
+				//ci.recovered = cases
+				yValues.push(ci.newRecovered)
+				break
+			default:
+				yValues.push(-1)
+		}	
+	}
+	data['y'] = yValues
+	data['x'] = dates 
 }
