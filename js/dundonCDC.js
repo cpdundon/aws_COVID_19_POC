@@ -11,7 +11,8 @@ const getData = () => {
 }
 
 const fetchData = () => {
-	const hdr = {'Subscription-Key': '3009d4ccc29e4808af1ccc25c69b4d5d'}
+	const hdr = {'Subscription-Key': '3009d4ccc29e4808af1ccc25c69b4d5d',
+							'Access-Control-Allow-Origin': '*'}
 	const url = 'https://api.smartable.ai/coronavirus/stats/US'
 	
 	console.log('fetching...')
@@ -71,7 +72,7 @@ const fillTable = (dayDict) => {
 	dates.sort()
 
 	let html = ''
-	for(i=0; i<dates.length-1; i++) {
+	for(i=dates.length-1; i>=0; i--) {
 		const ci = dayDict[dates[i]]
 		
 		html += "<tr>"
@@ -92,7 +93,7 @@ const parseInfo = (hist) => {
 	const firstDt = new Date(hist[0].date + ".000Z") 
 
 	let ci_m1 = new CovidInfo(new Date(firstDt - 1000 * 360 * 24))
-	ci_m1.confirmed = 0
+	ci_m1.cases = 0
 	ci_m1.deaths = 0
 	ci_m1.recovered = 0
 
