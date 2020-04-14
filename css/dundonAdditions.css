@@ -98,8 +98,10 @@ h3.main {
 
 table {
 	table-layout: fixed;
-	width: 95%;
 	border-collapse: separate;
+	width:96%; 
+	margin-left:2%; 
+	margin-right:2;
 }
 
 th {
@@ -116,13 +118,24 @@ table, th, td {
 }
 
 .right-position {
-	width: 45%;
+	width: 50%;
 	position: absolute;
 	right: 0;
 }
 
 .left-position {
-	width: 55%;
+	width: 50%;
 	position: absolute;
 	left: 0;
+}
+
+button {
+	width: 100%;
+	border: 1px solid orange;
+}
+
+.centered-thin {
+	width: 96%;
+	margin-left: 2%;
+	margin-right: 2%
 }

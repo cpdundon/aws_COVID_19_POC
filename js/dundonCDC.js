@@ -33,6 +33,7 @@ const fetchData = () => {
 		console.log('dayDict: ', dayDict)
 		fillTable(dayDict)
 		plotDiffs(dayDict)
+		plotCum(dayDict)
 	})
    .catch(error => console.log('request failed ', error))
 	
@@ -207,66 +208,83 @@ class JsonHolder {
 // CODE TO EXECUTE PLOTS GOES BELOW
 // ==========================================
 
-const plotDiffs = dayDict  => {
+const plotCum = dayDict  => {
 	
-	const trace1 = newTrace(dayDict, 'New Confirmed', 'gray')
-	const trace2 = newTrace(dayDict, 'New Deaths', 'black')
-	const trace3 = newTrace(dayDict, 'New Recoveries', 'orange')
+	const trace1 = newTrace(dayDict, 'Confirmed', 'orange')
+	const trace2 = newTrace(dayDict, 'Deaths', 'black')
+	const trace3 = newTrace(dayDict, 'Recoveries', 'green')
 	const data = [trace1, trace2, trace3]; 
 			
-	var layout = {
-		title: 'COVID-19 Day on Day Changes',
+	const layout = getLayout('US COVID-19 Cumulative Statistics -- Log Scale')
+	
+	Plotly.newPlot('cum-data', data, layout);
+}
+
+
+
+const plotDiffs = dayDict  => {
+	
+	const trace1 = newTrace(dayDict, 'New Confirmed', 'orange')
+	const trace2 = newTrace(dayDict, 'New Deaths', 'black')
+	const trace3 = newTrace(dayDict, 'New Recoveries', 'green')
+	const data = [trace1, trace2, trace3]; 
+			
+	const layout = getLayout('US COVID-19 New Cases -- Log Scale')
+
+	Plotly.newPlot('day-on-day', data, layout);
+}
+
+const getLayout = title => {	
+	const layout = {
+		title: title,
 		xaxis: {
 			title: 'Date',
 			titlefont: {
 				family: 'Arial, sans-serif',
 				size: 18,
-				color: 'lightgrey'
-			},
-			showticklabels: true,
-			tickangle: 'auto',
-			tickfont: {
-				family: 'Old Standard TT, serif',
-				size: 14,
-				color: 'black'
-			},
-			exponentformat: 'e',
-			showexponent: 'all'
-		},
-		yaxis: {
-			title: 'Cases',
-			titlefont: {
-				family: 'Arial, sans-serif',
-				size: 18,
-				color: 'lightgrey'
+				color: 'grey'
 			},
 			showticklabels: true,
 			tickangle: 45,
 			tickfont: {
 				family: 'Old Standard TT, serif',
-				size: 14,
+				size: 16,
 				color: 'black'
+			}
+		},
+		yaxis: {
+			type: 'log',
+			title: 'Cases',
+			titlefont: {
+				family: 'Arial, sans-serif',
+				size: 18,
+				color: 'grey'
 			},
-			exponentformat: 'e',
-			showexponent: 'all'
+			showticklabels: true,
+			tickangle: 45,
+			tickfont: {
+				family: 'Old Standard TT, serif',
+				size: 16,
+				color: 'black'
+			}
 		}
-	};
+	}
 
-	Plotly.newPlot('day-on-day', data, layout);
+	return layout
 }
 
-const newTrace = (name, dayDict, color) => {
+const newTrace = (dayDict, name, color) => {
 	const data = {}
 
 	parseDict(dayDict, data, name)
 	
 	const trace = {
-    type: "scatter",
+    type: "bar",
     mode: "lines",
     name: name,
     x: data['x'],
     y: data['y'],
-    line: {color: color}
+    marker: {color: color}
   }
 	
 	return trace
@@ -278,20 +296,26 @@ const parseDict = (dayDict, data, stream) => {
 	dates.sort()
 
 	yValues = []
-	for(i=dates.length-1; i>=0; i--) {
+	for(i=0; i<dates.length; i++) {
 		const ci = dayDict[dates[i]]
 	
 		switch (stream) {
+			case 'Confirmed':
+				yValues.push(ci.cases)
+				break
+			case 'Deaths':
+				yValues.push(ci.deaths)
+				break
+			case 'Recovered':
+				yValues.push(ci.recovered)
+				break
 			case 'New Confirmed':
-				//ci.cases = cases
 				yValues.push(ci.newCases)
 				break
 			case 'New Deaths':
-				//ci.deaths = cases
 				yValues.push(ci.newDeaths)
 				break
 			case 'New Recovered':
-				//ci.recovered = cases
 				yValues.push(ci.newRecovered)
 				break
 			default:
