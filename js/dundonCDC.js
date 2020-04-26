@@ -14,8 +14,11 @@ const getData = () => {
 }
 
 const fetchData = () => {
-	const hdr = {'Subscription-Key': '3009d4ccc29e4808af1ccc25c69b4d5d',
-							'Access-Control-Allow-Origin': '*'}
+	const hdr = {}
+	hdr["Subscription-Key"] =  '3009d4ccc29e4808af1ccc25c69b4d5d'
+	hdr["Access-Control-Allow-Origin"] = "http://localhost:8000"
+	hdr["Vary"] = "Origin"
+	
 	const url = 'https://api.smartable.ai/coronavirus/stats/US'
 	
 	console.log('fetching...')
@@ -27,6 +30,7 @@ const fetchData = () => {
 		headers: hdrInst,
 		mode: 'cors',
 		cache: 'default',
+		redirect: 'follow',
 	})
 
 	fetch(req)
